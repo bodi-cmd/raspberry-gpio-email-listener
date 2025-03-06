@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "imap": "^0.8.19",
+    "nodemailer": "^6.10.0"
+  },
+  "name": "raspberry-email-listener",
+  "version": "1.0.0",
+  "description": "A Small project that listens the emails in order to wake up a plex server",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tsc && node --trace-warnings ./dist/index.js",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/imap": "^0.8.42",
+    "@types/nodemailer": "^6.4.17",
+    "typescript": "^5.8.2"
+  }
+}
