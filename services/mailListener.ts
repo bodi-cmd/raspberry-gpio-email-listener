@@ -28,7 +28,7 @@ const findTextPart = (struct: any): string => {
     return '';
 }
 
-class MailService {
+class MailListener {
 
     private readonly imap: Imap;
 
@@ -160,4 +160,4 @@ class MailService {
     }
 }
 
-export { MailService };
+export { MailListener };
