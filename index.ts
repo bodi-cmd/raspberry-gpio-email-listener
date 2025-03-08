@@ -37,7 +37,7 @@ async function run(mailService: MailListener, mailSender: MailSender, mailParser
 
         if (!emails.length) {
             console.log("No emails found")
-            if (!currentSchedule || currentTime > currentSchedule.shutdownTime) {
+            if (!currentSchedule || (currentTime > currentSchedule.shutdownTime)) {
                 console.log("Shutdown time passed, attemtping to close the server...")
                 await hostHandler.turnServerOff();
                 console.log("Server closed.")
@@ -60,22 +60,20 @@ async function run(mailService: MailListener, mailSender: MailSender, mailParser
         requestedShutDownDate.setHours(requestedShutDownDate.getHours() + biggestRequestedHour);
 
         console.log(`From ${emails.length} emails, the biggest request is of ${biggestRequestedHour}h.`)
-
+        if (!biggestRequestedHour) {
+            return;
+        }
         if (!(await hostHandler.isServerOnline()) || !currentSchedule || currentSchedule.shutdownTime < requestedShutDownDate) {
             console.log("The server is either offline, or scheduled to shutdown sooner than the request.")
             emails.forEach((email) => {
-                if (biggestRequestedHour) {
-                    mailSender.sendEmail('turn-on-confirmation', "Vizionare placuta bossu'", email.from, { shutdownTime: requestedShutDownDate.toLocaleTimeString('ro-RO') })
-                }
+                mailSender.sendEmail('turn-on-confirmation', "Vizionare placuta bossu'", email.from, { shutdownTime: requestedShutDownDate.toLocaleTimeString('ro-RO') })
             });
             await hostHandler.turnServerOn();
             stateManager.saveSchedule(biggestRequestedHourUser, currentTime, requestedShutDownDate);
         } else {
             console.log("The server is already online, and scheduled until later.")
             emails.forEach((email) => {
-                if (biggestRequestedHour) {
-                    mailSender.sendEmail('turned-on-information', "Vizionare placuta bossu'", email.from, { shutdownTime: requestedShutDownDate.toLocaleTimeString('ro-RO') })
-                }
+                mailSender.sendEmail('turned-on-information', "Vizionare placuta bossu'", email.from, { shutdownTime: requestedShutDownDate.toLocaleTimeString('ro-RO') })
             });
         }
     } catch (error) {
