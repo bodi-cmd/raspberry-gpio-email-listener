@@ -11,7 +11,6 @@ config();
 
 async function main() {
     const gpio = new GPIO();
-    await gpio.pinInitialisation;
     const mailService = new MailListener();
     const mailSender = new MailSender();
     const mailParser = new MailParser();

@@ -1,58 +1,29 @@
-import gpiop from 'rpi-gpio';
+import { Gpio } from 'onoff';
 
 class GPIO {
-    relayPins: Record<number, number> = {}
-
-    readonly isProduction;
-
-    pinInitialisation: Promise<void[]>;
+    relayPins: Record<number, Gpio> = {}
 
     constructor() {
-        this.isProduction = process.env.SYSTEM_OS === 'linux'
-        if (process.env.RELAY_1_PIN) {
-            this.relayPins[1] = parseInt(process.env.RELAY_1_PIN);
+        if (process.env.SYSTEM_OS === 'linux') {
+            if (process.env.RELAY_1_PIN) {
+                this.relayPins[1] = new Gpio(parseInt(process.env.RELAY_1_PIN), 'out')
+            }
+            if (process.env.RELAY_2_PIN) {
+                this.relayPins[2] = new Gpio(parseInt(process.env.RELAY_2_PIN), 'out')
+            }
         }
-        if (process.env.RELAY_2_PIN) {
-            this.relayPins[2] = parseInt(process.env.RELAY_2_PIN);
-        }
-        this.pinInitialisation = this.initPins();
-    }
-
-    initPins() {
-        return Promise.all(
-            Object.entries(this.relayPins).map(([_relay, pin]) =>
-                new Promise<void>((resolve, reject) => {
-                    if (this.isProduction) {
-                        gpiop.setup(pin, gpiop.DIR_OUT, (error) => {
-                            if (error) {
-                                reject(error);
-                            }
-                            resolve();
-                        });
-                    } else {
-                        resolve();
-                    }
-                }))
-        );
     }
 
     setRelay(relay: number, value: boolean) {
-        return new Promise<void>((resolve, reject) => {
+        try {
             if (this.relayPins[relay]) {
-                if (this.isProduction) {
-                    gpiop.write(this.relayPins[relay], value, (err) => {
-                        if (err) {
-                            reject(err);
-                        }
-                        resolve()
-                    });
-                } else {
-                    resolve();
-                }
+                this.relayPins[relay].writeSync(value ? 1 : 0);
             } else {
-                reject(`Relay ${relay} pin is not set!`);
+                console.log(`Relay ${relay} pin is not set!`);
             }
-        })
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
 
