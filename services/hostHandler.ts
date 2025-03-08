@@ -15,7 +15,7 @@ class HostHandler {
     isServerOnline(): Promise<boolean> {
         return new Promise((resolve) => {
             console.log("Pinging the server...")
-            exec(`ping ${this.config.ip}`, (error, stdout) => {
+            exec(`ping -c 3 ${this.config.ip}`, (error, stdout) => {
                 console.log("Response from ping:", stdout)
                 resolve(!error);
             });
@@ -29,13 +29,13 @@ class HostHandler {
                 console.log("The server is already powered on!")
                 return;
             }
-            await this.gpio.setRelay(this.config.powerButtonRelay, true);
+            this.gpio.setRelay(this.config.powerButtonRelay, true);
             await wait(200);
-            await this.gpio.setRelay(this.config.powerButtonRelay, false);
+            this.gpio.setRelay(this.config.powerButtonRelay, false);
         } catch (error) {
             console.log("An error occured during the gpio power on!");
             console.error(error);
-            await this.gpio.setRelay(this.config.powerButtonRelay, false);
+            this.gpio.setRelay(this.config.powerButtonRelay, false);
         }
     }
 
@@ -43,16 +43,16 @@ class HostHandler {
         console.log("Relay tries to power off the server!")
         try {
             if (await this.isServerOnline()) {
-                await this.gpio.setRelay(this.config.powerButtonRelay, true);
+                this.gpio.setRelay(this.config.powerButtonRelay, true);
                 await wait(6000);
-                await this.gpio.setRelay(this.config.powerButtonRelay, false);
+                this.gpio.setRelay(this.config.powerButtonRelay, false);
             } else {
                 console.log("The server is already powered off!")
             }
         } catch (error) {
             console.log("An error occured during the gpio power off!");
             console.error(error);
-            await this.gpio.setRelay(this.config.powerButtonRelay, false);
+            this.gpio.setRelay(this.config.powerButtonRelay, false);
         }
     }
 }
