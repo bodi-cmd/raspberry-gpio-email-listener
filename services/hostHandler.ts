@@ -13,9 +13,10 @@ class HostHandler {
     constructor(readonly config: HostConfig, readonly gpio: GPIO) { }
 
     isServerOnline(): Promise<boolean> {
+        const cmd = process.env.SYSTEM_OS === 'linux' ? `ping -c 3 ${this.config.ip}` : `ping -n 3 ${this.config.ip}`;
         return new Promise((resolve) => {
             console.log("Pinging the server...")
-            exec(`ping -n 3 ${this.config.ip}`, (error, stdout) => {
+            exec(cmd, (error, stdout) => {
                 console.log("Response from ping:", stdout)
                 resolve(!error);
             });
