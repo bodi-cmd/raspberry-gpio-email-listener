@@ -15,7 +15,7 @@ class HostHandler {
     isServerOnline(): Promise<boolean> {
         return new Promise((resolve) => {
             console.log("Pinging the server...")
-            exec(`ping -c 3 ${this.config.ip}`, (error, stdout) => {
+            exec(`ping -n 3 ${this.config.ip}`, (error, stdout) => {
                 console.log("Response from ping:", stdout)
                 resolve(!error);
             });
