@@ -15,7 +15,7 @@ Additionally, the system uses emails for communication, allowing the user to sen
 4. **Node.js** sends a response email via **SMTP** to confirm the action taken.
 5. **The user** receives a response with the current status of the Linux machine.
 
-[alt text](https://github.com/bodi-cmd/raspberry-gpio-email-listener/blob/main/architecture.png?raw=true)
+![architecture](https://raw.githubusercontent.com/bodi-cmd/raspberry-gpio-email-listener/refs/heads/main/architecture.png)
 
 ---
 ## Components Used
