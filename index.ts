@@ -54,6 +54,7 @@ async function keepAlive(
         .forEach(async (email) => {
           const command = mailParser.extractCommand(email.content);
           let serverStatus = await hostHandler.isServerOnline();
+          console.log("Command: " + command);
           if (command === KEEP_ALIVE_STATUS.ON) {
             stateManager.setKeepAliveStatus(KEEP_ALIVE_STATUS.ON);
             if (!serverStatus) {
@@ -86,6 +87,7 @@ async function keepAlive(
       const serverStatus = await hostHandler.isServerOnline();
       if (desiredStatus === KEEP_ALIVE_STATUS.ON && !serverStatus) {
         await hostHandler.turnServerOn();
+        await delay(120_000);
       } else if (desiredStatus === KEEP_ALIVE_STATUS.OFF && serverStatus) {
         await hostHandler.turnServerOff();
       }
@@ -96,8 +98,15 @@ async function keepAlive(
     await mailService.disconnectFromImap();
     console.log("Disconnected from IMAP.");
     setTimeout(
-      () => keepAlive(mailService, mailSender, mailParser, hostHandler, stateManager),
-      120_000
+      () =>
+        keepAlive(
+          mailService,
+          mailSender,
+          mailParser,
+          hostHandler,
+          stateManager
+        ),
+      10_000
     );
   }
 }
