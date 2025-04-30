@@ -49,35 +49,36 @@ async function keepAlive(
     console.log("Getting emails...");
     const emails = await mailService.getNewEmails();
     if (emails.length) {
-      emails
-        .filter(({ from }) => from === process.env.ADMIN_EMAIL)
-        .forEach(async (email) => {
-          const command = mailParser.extractCommand(email.content);
-          let serverStatus;
-          console.log("Command: " + command);
-          if (command === KEEP_ALIVE_STATUS.ON) {
-            stateManager.setKeepAliveStatus(KEEP_ALIVE_STATUS.ON);
-            await hostHandler.turnServerOn();
-            await delay(30_000);
-            serverStatus = await hostHandler.isServerOnline();
-          } else if (command === KEEP_ALIVE_STATUS.OFF) {
-            stateManager.setKeepAliveStatus(KEEP_ALIVE_STATUS.OFF);
-            await hostHandler.turnServerOff();
-            await delay(2_000);
-            serverStatus = await hostHandler.isServerOnline();
-          } else {
-            return;
-          }
-          await mailSender.sendEmail(
-            "command-confirmation",
-            "Comanda executata cu success",
-            email.from,
-            {
-              command,
-              serverState: serverStatus ? "ON" : "OFF",
+      await Promise.all(
+        emails
+          .filter(({ from }) => from === process.env.ADMIN_EMAIL)
+          .map(async (email) => {
+            const command = mailParser.extractCommand(email.content);
+            let serverStatus;
+            console.log("Command: " + command);
+            if (command === KEEP_ALIVE_STATUS.ON) {
+              stateManager.setKeepAliveStatus(KEEP_ALIVE_STATUS.ON);
+              await hostHandler.turnServerOn();
+              await delay(60_000);
+            } else if (command === KEEP_ALIVE_STATUS.OFF) {
+              stateManager.setKeepAliveStatus(KEEP_ALIVE_STATUS.OFF);
+              await hostHandler.turnServerOff();
+              await delay(2_000);
+            } else {
+              return;
             }
-          );
-        });
+            serverStatus = await hostHandler.isServerOnline();
+            await mailSender.sendEmail(
+              "command-confirmation",
+              "Comanda executata cu success",
+              email.from,
+              {
+                command,
+                serverState: serverStatus ? "ON" : "OFF",
+              }
+            );
+          })
+      );
     } else {
       const desiredStatus = stateManager.getKeepAliveStatus();
       const serverStatus = await hostHandler.isServerOnline();
