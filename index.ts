@@ -96,7 +96,7 @@ async function keepAlive(
     await mailService.disconnectFromImap();
     console.log("Disconnected from IMAP.");
     setTimeout(
-      () => run(mailService, mailSender, mailParser, hostHandler, stateManager),
+      () => keepAlive(mailService, mailSender, mailParser, hostHandler, stateManager),
       120_000
     );
   }
