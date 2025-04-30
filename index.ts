@@ -68,7 +68,7 @@ async function keepAlive(
           } else {
             return;
           }
-          mailSender.sendEmail(
+          await mailSender.sendEmail(
             "command-confirmation",
             "Comanda executata cu success",
             email.from,
@@ -166,7 +166,7 @@ async function run(
         "The server is either offline, or scheduled to shutdown sooner than the request."
       );
       emails.forEach((email) => {
-        mailSender.sendEmail(
+        await mailSender.sendEmail(
           "turn-on-confirmation",
           "Vizionare placuta bossu'",
           email.from,
@@ -182,7 +182,7 @@ async function run(
     } else {
       console.log("The server is already online, and scheduled until later.");
       emails.forEach((email) => {
-        mailSender.sendEmail(
+        await mailSender.sendEmail(
           "turned-on-information",
           "Vizionare placuta bossu'",
           email.from,
