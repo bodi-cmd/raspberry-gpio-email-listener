@@ -53,22 +53,18 @@ async function keepAlive(
         .filter(({ from }) => from === process.env.ADMIN_EMAIL)
         .forEach(async (email) => {
           const command = mailParser.extractCommand(email.content);
-          let serverStatus = await hostHandler.isServerOnline();
+          let serverStatus;
           console.log("Command: " + command);
           if (command === KEEP_ALIVE_STATUS.ON) {
             stateManager.setKeepAliveStatus(KEEP_ALIVE_STATUS.ON);
-            if (!serverStatus) {
-              await hostHandler.turnServerOn();
-              await delay(30_000);
-              serverStatus = await hostHandler.isServerOnline();
-            }
+            await hostHandler.turnServerOn();
+            await delay(30_000);
+            serverStatus = await hostHandler.isServerOnline();
           } else if (command === KEEP_ALIVE_STATUS.OFF) {
             stateManager.setKeepAliveStatus(KEEP_ALIVE_STATUS.OFF);
-            if (serverStatus) {
-              await hostHandler.turnServerOff();
-              await delay(2_000);
-              serverStatus = await hostHandler.isServerOnline();
-            }
+            await hostHandler.turnServerOff();
+            await delay(2_000);
+            serverStatus = await hostHandler.isServerOnline();
           } else {
             return;
           }

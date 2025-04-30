@@ -59,7 +59,7 @@ class StateManager {
 
   setKeepAliveStatus(status: KEEP_ALIVE_STATUS) {
     try {
-      fs.appendFileSync("./states/uptimeSchedule.csv", `${status}\n`);
+      fs.appendFileSync("./states/keepAlive.csv", `${status}\n`);
     } catch (error) {
       console.error(error);
     }
