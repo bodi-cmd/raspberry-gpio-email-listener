@@ -165,7 +165,7 @@ async function run(
       console.log(
         "The server is either offline, or scheduled to shutdown sooner than the request."
       );
-      emails.forEach((email) => {
+      emails.forEach(async (email) => {
         await mailSender.sendEmail(
           "turn-on-confirmation",
           "Vizionare placuta bossu'",
@@ -181,7 +181,7 @@ async function run(
       );
     } else {
       console.log("The server is already online, and scheduled until later.");
-      emails.forEach((email) => {
+      emails.forEach(async (email) => {
         await mailSender.sendEmail(
           "turned-on-information",
           "Vizionare placuta bossu'",
