@@ -75,6 +75,7 @@ async function keepAlive(
               {
                 command,
                 serverState: serverStatus ? "ON" : "OFF",
+                ip: await hostHandler.getPublicIp(),
               }
             );
           })
